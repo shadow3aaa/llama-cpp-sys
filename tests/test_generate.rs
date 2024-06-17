@@ -1,5 +1,5 @@
 use core::slice;
-use llama_cpp_sys::*;
+use llama_cpp_sys_3::*;
 use std::{
     ffi::{CStr, CString},
     io::{stdout, Write},
@@ -179,7 +179,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// Adapted from `llama.cpp/common/common.cpp`
 fn token_to_piece(token: llama_token, model: *const llama_model) -> String {
     let mut buf = [0u8; 64];
-    let n_tokens = unsafe { llama_token_to_piece(model, token, buf.as_mut_ptr() as *mut i8, buf.len().try_into().unwrap()) };
+    let n_tokens = unsafe { llama_token_to_piece(model, token, buf.as_mut_ptr() as *mut i8, buf.len().try_into().unwrap(), false) };
     buf[buf.len() - 1] = 0;
     if n_tokens < 0 {
         // should be unreachable

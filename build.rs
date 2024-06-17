@@ -38,13 +38,21 @@ fn main() {
     println!("cargo:rustc-link-search=native={}/build", dst.display());
     println!("cargo:rustc-link-lib=static=llama");
 
-    // FIXME: Figure out how to make linux use clang. We may have to define
-    // the CC environment variable before running the `.build()` method above
-    // or the API may have a way to set the compiler.
-    #[cfg(not(target_os = "linux"))]
+    // FIXME: These are fragile because they rely on certain default
+    // configurations and guesses at whatever CMake decides to do.
+    // Can we parse CMake's output? Ugly but it could work.
+    // Actually it's not really that ugly. The CMakeCache.txt has
+    // everything we need to know and it's an ini-like file.
+    #[cfg(target_os = "macos")]
     println!("cargo:rustc-link-lib=dylib=c++");
     #[cfg(target_os = "linux")]
     println!("cargo:rustc-link-lib=dylib=stdc++");
+    #[cfg(target_os = "windows")]
+    // Thanks, ChatGPT 4o for the name of the msvc c++ runtime and this fix:
+    #[cfg(all(target_os = "windows", debug_assertions))]
+    println!("cargo:rustc-link-lib=dylib=msvcrtd"); // Use debug runtime
+    #[cfg(all(target_os = "windows", not(debug_assertions)))]
+    println!("cargo:rustc-link-lib=dylib=msvcrt"); // Use release runtime
 
     #[cfg(target_os = "macos")]
     {
