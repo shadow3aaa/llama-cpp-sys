@@ -1,6 +1,6 @@
 [package]
 name = "llama-cpp-sys-3"
-version = "0.5.9"
+version = "0.5.10"
 edition = "2021"
 description = "llama.cpp bindings"
 license = "MIT"
