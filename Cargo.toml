@@ -11,11 +11,11 @@ exclude = ["external/llama.cpp/.git", "external/llama.cpp/models/*"]
 [dependencies]
 
 [build-dependencies]
-cmake = "0.1"
-bindgen = "0.64.0"
+cmake = "0.1.54"
+bindgen = "0.71.1"
 
 [dev-dependencies]
-rand = "0.8.5"
+rand = "0.9.0"
 
 [features]
 cuda = []

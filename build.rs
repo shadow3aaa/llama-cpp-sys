@@ -1,3 +1,4 @@
+use bindgen::CargoCallbacks;
 use cmake::Config;
 use std::env;
 use std::path::PathBuf;
@@ -29,13 +30,13 @@ fn main() {
     config.define("LLAMA_CUDA_FP16", "ON");
 
     #[cfg(feature = "native")]
-    config.define("LLAMA_NATIVE", "ON");
+    config.define("GGML_NATIVE", "ON");
 
     // Build
     let dst = config.very_verbose(true).build();
 
     // Link
-    println!("cargo:rustc-link-search=native={}/build", dst.display());
+    println!("cargo:rustc-link-search=native={}", dst.join("lib").display());
     println!("cargo:rustc-link-lib=static=llama");
 
     // FIXME: These are fragile because they rely on certain default
@@ -78,10 +79,10 @@ fn main() {
     println!("cargo:rerun-if-changed=external/llama.cpp/*.cpp");
 
     let bindings = bindgen::Builder::default()
-        .header("external/llama.cpp/llama.h")
+        .header(dst.join("include/llama.h").to_str().unwrap())
         .allowlist_function("llama_.*")
         .allowlist_type("llama_.*")
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(CargoCallbacks::new()))
         .generate()
         .expect("Unable to generate bindings");
 
